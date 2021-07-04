@@ -1,0 +1,45 @@
+{
+  "name": "httpdir",
+  "version": "1.0.0",
+  "description": "Simple, zero dependency command-line HTTP server for static local files",
+  "author": "Johan Satgé",
+  "bin": {
+    "httpdir": "src/index.js"
+  },
+  "scripts": {},
+  "files": [
+    "src/**/*.js",
+    "src/**/*.html",
+    "src/**/*.css",
+    "src/**/*.png",
+    "src/**/*.ico",
+    "package.json",
+    "readme.md",
+    "license.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johansatge/httpdir"
+  },
+  "bugs": {
+    "url": "https://github.com/johansatge/httpdir/issues"
+  },
+  "keywords": [
+    "server",
+    "static",
+    "local",
+    "http",
+    "file",
+    "apache",
+    "nginx",
+    "command-line",
+    "cli"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=12"
+  },
+  "preferGlobal": true,
+  "license": "MIT"
+}
