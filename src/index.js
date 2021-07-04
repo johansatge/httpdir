@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fsp = require('fs').promises
 const http = require('http')
 const { log, color, printVersionAndExit, printHelpAndExit, nameAndVersion } = require('./log.js')
