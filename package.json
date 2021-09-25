@@ -1,6 +1,6 @@
 {
   "name": "httpdir",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Simple, zero dependency command-line HTTP server for static local files",
   "author": "Johan Satgé",
   "bin": {
