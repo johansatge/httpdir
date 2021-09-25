@@ -6,7 +6,6 @@ const { log, color, printVersionAndExit, printHelpAndExit, nameAndVersion } = re
 const path = require('path')
 const { serveDirectory } = require('./serveDirectory.js')
 const { serveFavicon, serveFile } = require('./serveFile.js')
-const url = require('url')
 
 if (process.argv.includes('--version')) {
   printVersionAndExit()
@@ -38,7 +37,7 @@ try {
 }
 
 async function onServerRequest(request, response) {
-  const parsedUrl = url.parse(request.url, true)
+  const parsedUrl = new URL(request.url, `http://${request.headers.host}/`)
   const requestedPath = decodeURIComponent(parsedUrl.pathname)
   try {
     // GET requests allowed
