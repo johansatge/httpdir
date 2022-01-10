@@ -11,13 +11,13 @@ body.theme--dark {
   background: #121212;
 }
 body.theme--light {
-  background: #f9f9f9;
+  background: #f1f1f1;
 }
 
 .directory {
   font-size: 16px;
   font-weight: bold;
-  margin: 20px 15px 15px 15px;
+  margin: 20px 25px 15px 25px;
 }
 
 .directory::after {
@@ -66,9 +66,9 @@ body.theme--light {
 }
 
 .files {
-  margin: 10px 0 10px 0;
-  padding: 2px 0 2px 0;
+  margin: 10px 15px 10px 15px;
   list-style-type: none;
+  border-radius: 3px;
 }
 .theme--dark .files {
   background: #1e1e1e;
@@ -85,6 +85,14 @@ body.theme--light {
   background-repeat: no-repeat;
   text-indent: 30px;
   font-size: 15px;
+  min-height: 19px;
+  box-sizing: border-box;
+}
+.theme--dark .files__file {
+  border-bottom: 1px solid #121212;
+}
+.theme--light .files__file {
+  border-bottom: 1px solid #f1f1f1;
 }
 
 .files__file::after {
@@ -145,7 +153,7 @@ body.theme--light {
 }
 
 .footer {
-  margin: 0 15px 40px 15px;
+  margin: 0 25px 40px 25px;
   text-align: right;
 }
 
