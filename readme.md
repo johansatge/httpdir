@@ -7,6 +7,8 @@
 
 > Simple, zero dependency command-line HTTP server for static local files
 
+<img src="screenshot.png" alt="Safari window with a list of files">
+
 ---
 
 * [Installation](#installation)
