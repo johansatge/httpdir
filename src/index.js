@@ -2,7 +2,13 @@
 
 const fsp = require('fs').promises
 const http = require('http')
-const { log, color, printVersionAndExit, printHelpAndExit, nameAndVersion } = require('./log.js')
+const {
+  log,
+  color,
+  printVersionAndExit,
+  printHelpAndExit,
+  printStartupInfo,
+} = require('./log.js')
 const path = require('path')
 const { serveDirectory } = require('./serveDirectory.js')
 const { serveFavicon, serveFile } = require('./serveFile.js')
@@ -24,12 +30,7 @@ try {
   server.on('error', onServerError)
   server.listen(httpPort)
   if (server.listening) {
-    const message = [
-      color(nameAndVersion(), 'purple'),
-      `started ${color('http://localhost:' + httpPort, 'green')}`,
-      `targeting ${color(basePath, 'cyan')}`,
-    ]
-    log(message.join(' '))
+    printStartupInfo(basePath, httpPort)
   }
 } catch(error) {
   console.log(`Server could not start: ${error.message}`)

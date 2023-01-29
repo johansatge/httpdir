@@ -1,10 +1,12 @@
 const pkg = require('../package.json')
+const os = require('os')
 
 module.exports = {
   log,
   color,
   printVersionAndExit,
   printHelpAndExit,
+  printStartupInfo,
   nameAndVersion,
 }
 
@@ -40,6 +42,20 @@ function printHelpAndExit() {
   ]
   console.log(help.join('\n'))
   process.exit(0)
+}
+
+function printStartupInfo(basePath, httpPort) {
+  console.log(`🚀 ${color(nameAndVersion(), 'purple')}`)
+  console.log(`📁 ${color(basePath, 'cyan')}`)
+  console.log(`🌎 http://${color('localhost', 'green')}:${httpPort}`)
+  const nets = os.networkInterfaces()
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      if (net.family === 'IPv4') {
+        console.log(`🌎 http://${color(net.address, 'green')}:${httpPort}`)
+      }
+    }
+  }
 }
 
 function log(message) {
