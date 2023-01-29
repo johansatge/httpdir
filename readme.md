@@ -47,6 +47,7 @@ This project uses [semver](http://semver.org/).
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| `1.4.0` | 2023-01-29 | Improve startup info |
 | `1.3.0` | 2023-01-28 | Support more mime types |
 | `1.2.0` | 2022-01-10 | Update UI ([#1](https://github.com/johansatge/httpdir/pull/1)) |
 | `1.1.0` | 2021-09-25 | Stop relying on deprecated `url.parse()` |
