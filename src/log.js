@@ -1,5 +1,4 @@
 const pkg = require('../package.json')
-const os = require('os')
 
 module.exports = {
   log,
@@ -44,18 +43,13 @@ function printHelpAndExit() {
   process.exit(0)
 }
 
-function printStartupInfo(basePath, httpPort) {
+function printStartupInfo(basePath, httpPort, urls) {
   console.log(`🚀 ${color(nameAndVersion(), 'purple')}`)
   console.log(`📁 ${color(basePath, 'cyan')}`)
-  console.log(`🌎 http://${color('localhost', 'green')}:${httpPort}`)
-  const nets = os.networkInterfaces()
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-      if (net.family === 'IPv4') {
-        console.log(`🌎 http://${color(net.address, 'green')}:${httpPort}`)
-      }
-    }
-  }
+  urls.forEach((url) => {
+    const domain = url.replace(/http:\/\/(.*):[0-9]+/, '$1')
+    console.log(`🌎 http://${color(domain, 'green')}:${httpPort}`)
+  })
 }
 
 function log(message) {
