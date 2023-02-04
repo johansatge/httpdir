@@ -4,9 +4,12 @@
   "description": "Simple, zero dependency command-line HTTP server for static local files",
   "author": "Johan Satgé",
   "bin": {
-    "httpdir": "src/index.js"
+    "httpdir": "src/cli.js"
   },
-  "scripts": {},
+  "main": "src/server.js",
+  "scripts": {
+    "test": "jest --config=test/jest.config.js"
+  },
   "files": [
     "src/**/*.js",
     "src/**/*.html",
@@ -35,11 +38,13 @@
     "command-line",
     "cli"
   ],
-  "dependencies": {},
-  "devDependencies": {},
   "engines": {
     "node": ">=12"
   },
   "preferGlobal": true,
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.4.1",
+    "node-fetch": "^2.6.9"
+  }
 }
