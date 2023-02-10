@@ -4,7 +4,7 @@ First off, thanks for taking the time to contribute! :tada:
 
 ## Bugs and questions
 
-Report bugs, ask questions, and request features using [GitHub Issues](https://github.com/johansatge/jpeg-autorotate/issues).
+Report bugs, ask questions, and request features using [GitHub Issues](https://github.com/johansatge/httpdir/issues).
 
 When submitting a bug report, do not hesitate to be as exhaustive as possible, by adding:
 
