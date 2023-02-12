@@ -99,6 +99,7 @@ This project uses [semver](http://semver.org/).
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| `2.0.1` | 2023-02-12 | Fix `onResponse` event for favicons |
 | `2.0.0` | 2023-02-04 | Expose node module<br>Drop Node 12 support |
 | `1.4.0` | 2023-01-29 | Improve startup info |
 | `1.3.0` | 2023-01-28 | Support more mime types |
