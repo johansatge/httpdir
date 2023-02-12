@@ -131,12 +131,34 @@ describe('Server', () => {
   test('Fires onResponse() when a resource is fetched', (done) => {
     server = httpdir.createServer({ httpPort: 8383 })
     server.onStart(async () => {
-      await fetch(`http://localhost:8383/readme.md`)
+      const response = await fetch('http://localhost:8383/favicon.ico')
+      expect(response.headers.get('content-type')).toEqual('image/x-icon')
     })
     server.onResponse(({ requestedPath, requestedMethod, httpCode }) => {
-      expect(requestedPath).toEqual('/readme.md')
+      expect(requestedPath).toEqual('/favicon.ico')
       expect(requestedMethod).toEqual('GET')
       expect(httpCode).toEqual(200)
+      done()
+    })
+    server.onError(done)
+    server.start()
+  })
+})
+
+
+describe('Server', () => {
+  let server
+  afterEach(() => {
+    server.stop()
+  })
+  test('Serves a directory', (done) => {
+    server = httpdir.createServer({ basePath: 'test', httpPort: 8484 })
+    server.onStart(async () => {
+      const response = await fetch('http://localhost:8484')
+      const html = await response.text()
+      expect(html).toContain('href="jest.config.js"')
+      expect(html).toContain('href="server.test.js"')
+      expect(response.headers.get('content-type')).toEqual('text/html')
       done()
     })
     server.onError(done)

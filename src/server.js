@@ -87,6 +87,7 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       // Project favicon
       if (requestedPath === '/favicon.ico') {
         await serveFavicon({ basePath, response })
+        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode: 200 })
         return
       }
       // Block request to directories above the base one
