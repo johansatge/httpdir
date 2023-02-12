@@ -1,7 +1,8 @@
 [![Version](https://img.shields.io/npm/v/httpdir.svg)](https://github.com/johansatge/httpdir/releases)
 [![Downloads](https://img.shields.io/npm/dm/httpdir.svg)](https://www.pkgstats.com/pkg:httpdir)
 [![Last commit](https://badgen.net/github/last-commit/johansatge/httpdir)](https://github.com/johansatge/httpdir/commits/master)
-[![Build status](https://github.com/johansatge/httpdir/actions/workflows/test.yml/badge.svg)](https://github.com/johansatge/httpdir/actions)
+[![Test](https://github.com/johansatge/httpdir/actions/workflows/test.yml/badge.svg)](https://github.com/johansatge/httpdir/actions)
+[![Codecov](https://codecov.io/gh/johansatge/httpdir/branch/master/graph/badge.svg?token=IGLWMA4BUI)](https://codecov.io/gh/johansatge/httpdir)
 [![Install Size](https://badgen.net/packagephobia/install/httpdir)](https://packagephobia.com/result?p=httpdir)
 
 ![Icon](icon.png)
