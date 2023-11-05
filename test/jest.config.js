@@ -1,7 +1,5 @@
 const path = require('path')
 
-console.log(path.join(__dirname, '../src/**/*'))
-
 module.exports = async () => {
   return {
     testMatch: [path.join(__dirname, '**/*.test.js')],

@@ -26,6 +26,7 @@ async function serveDirectory({ basePath, requestedPath, response }) {
     footerText: nameAndVersion(),
     footerLink: pkg.repository.url,
   }))
+  return { httpCode: 200 }
 }
 
 /**
