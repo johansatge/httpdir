@@ -99,6 +99,7 @@ This project uses [semver](http://semver.org/).
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| `2.1.0` | 2023-1-07 | Support [`Range`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range) request header |
 | `2.0.1` | 2023-02-12 | Fix `onResponse` event for favicons |
 | `2.0.0` | 2023-02-04 | Expose node module<br>Drop Node 12 support |
 | `1.4.0` | 2023-01-29 | Improve startup info |
