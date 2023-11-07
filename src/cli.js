@@ -26,8 +26,12 @@ server.onStart(({ basePath, httpPort, urls }) => {
   printStartupInfo(basePath, httpPort, urls)
 })
 server.onResponse(({ requestedPath, requestedMethod, httpCode }) => {
-  const methodColor = httpCode === 200 ? 'green' : 'red'
-  log(`${color(requestedMethod, methodColor)} ${requestedPath}`)
+  const methodColor = String(httpCode).startsWith('2') ? 'green' : 'red'
+  log([
+    color(requestedMethod, methodColor),
+    color(httpCode, methodColor),
+    requestedPath,
+  ].join(' '))
 })
 server.onError((error) => {
   log(`A server error occurred: ${color(error.message, 'red')}`)

@@ -49,10 +49,9 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       callbacks.onError(new Error('Invalid base path'))
       return
     }
-    server.listen(httpPort)
-    if (server.listening) {
+    server.listen(httpPort, () => {
       callbacks.onStart({ basePath, httpPort, urls: getUrls() })
-    }
+    })
   }
 
   function getUrls() {
@@ -86,8 +85,8 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       }
       // Project favicon
       if (requestedPath === '/favicon.ico') {
-        await serveFavicon({ basePath, response })
-        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode: 200 })
+        const { httpCode } = await serveFavicon({ basePath, response })
+        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode })
         return
       }
       // Block request to directories above the base one
@@ -104,20 +103,20 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       }
       // Serve a directory listing
       if (fileStat.isDirectory()) {
-        await serveDirectory({ basePath, requestedPath, response })
-        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode: 200 })
+        const { httpCode } = await serveDirectory({ basePath, requestedPath, response })
+        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode })
         return
       }
       // Serve a file from disk
       if (fileStat.isFile()) {
-        await serveFile({ basePath, requestedPath, fileStat, response })
-        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode: 200 })
+        const { httpCode } = await serveFile({ basePath, requestedPath, fileStat, request, response })
+        callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode })
         return
       }
       // Other
       throw new HttpError(`Resource ${requestedPath} is neither a file or directory`, 404)
     } catch(error) {
-      response.writeHead(error.httpCode, { 'Content-Type': 'text/plain' })
+      response.writeHead(error.httpCode || 500, { 'Content-Type': 'text/plain' })
       response.end(error.message)
       callbacks.onResponse({
         requestedPath,
