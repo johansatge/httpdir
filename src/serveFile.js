@@ -1,10 +1,13 @@
-const fs = require('fs')
-const fsp = require('fs').promises
-const path = require('path')
-const { getMimeType } = require('./mimeType.js')
-const { nameAndVersion } = require('./log.js')
+import fs from 'fs'
+import { promises as fsp } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { getMimeType } from './mimeType.js'
+import { nameAndVersion } from './log.js'
 
-module.exports = {
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export {
   serveFile,
   serveFavicon,
 }
@@ -59,11 +62,11 @@ async function serveFile({ basePath, requestedPath, fileStat, request, response 
  * Serve the project favicon
  * (From disk if it exists, or the one from the project)
  */
-async function serveFavicon({ basePath, response }) {
+async function serveFavicon({ basePath, request, response }) {
   try {
     const fileStat = await fsp.stat(path.join(basePath, 'favicon.ico'))
     if (fileStat.isFile()) {
-      return await serveFile({ basePath, requestedPath: '/favicon.ico', fileStat, response})
+      return await serveFile({ basePath, requestedPath: '/favicon.ico', fileStat, request, response })
     }
   } catch(error) {
     const filePath = path.join(__dirname, 'ui/favicon.ico')

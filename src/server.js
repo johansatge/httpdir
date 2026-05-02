@@ -1,12 +1,12 @@
-const fsp = require('fs').promises
-const http = require('http')
-const os = require('os')
-const path = require('path')
-const { serveDirectory } = require('./serveDirectory.js')
-const { serveFavicon, serveFile } = require('./serveFile.js')
-const { HttpError } = require('./httpError.js')
+import { promises as fsp } from 'fs'
+import http from 'http'
+import os from 'os'
+import path from 'path'
+import { serveDirectory } from './serveDirectory.js'
+import { serveFavicon, serveFile } from './serveFile.js'
+import { HttpError } from './httpError.js'
 
-module.exports = {
+export {
   createServer,
 }
 
@@ -85,7 +85,7 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       }
       // Project favicon
       if (requestedPath === '/favicon.ico') {
-        const { httpCode } = await serveFavicon({ basePath, response })
+        const { httpCode } = await serveFavicon({ basePath, request, response })
         callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode })
         return
       }
