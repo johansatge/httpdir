@@ -1,11 +1,8 @@
 import fs from 'fs'
 import { promises as fsp } from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { getMimeType } from './mimeType.js'
 import { nameAndVersion } from './log.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export {
   serveFile,
@@ -69,7 +66,7 @@ async function serveFavicon({ basePath, request, response }) {
       return await serveFile({ basePath, requestedPath: '/favicon.ico', fileStat, request, response })
     }
   } catch(error) {
-    const filePath = path.join(__dirname, 'ui/favicon.ico')
+    const filePath = path.join(import.meta.dirname, 'ui/favicon.ico')
     const fileStat = await fsp.stat(filePath)
     response.writeHead(200, {
       'Content-Type': 'image/x-icon',

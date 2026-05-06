@@ -1,6 +1,4 @@
-import { createRequire } from 'module'
-
-const pkg = createRequire(import.meta.url)('../package.json')
+import pkg from '../package.json' with { type: 'json' }
 
 export {
   log,
