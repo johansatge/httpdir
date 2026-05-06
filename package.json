@@ -3,12 +3,15 @@
   "version": "2.1.0",
   "description": "Simple, zero dependency command-line HTTP server for static local files",
   "author": "Johan Satgé",
+  "type": "module",
   "bin": {
     "httpdir": "src/cli.js"
   },
-  "main": "src/server.js",
+  "exports": {
+    ".": "./src/server.js"
+  },
   "scripts": {
-    "test": "jest --config=test/jest.config.js"
+    "test": "vitest run --config=test/vitest.config.js --coverage"
   },
   "files": [
     "src/**/*.js",
@@ -39,12 +42,12 @@
     "cli"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=22"
   },
   "preferGlobal": true,
   "license": "MIT",
   "devDependencies": {
-    "jest": "^29.4.1",
-    "node-fetch": "^2.6.9"
+    "@vitest/coverage-v8": "^3.2.4",
+    "vitest": "^3.2.4"
   }
 }

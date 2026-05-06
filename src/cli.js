@@ -1,14 +1,7 @@
 #!/usr/bin/env node
 
-const path = require('path')
-const {
-  log,
-  color,
-  printVersionAndExit,
-  printHelpAndExit,
-  printStartupInfo,
-} = require('./log.js')
-const { createServer } = require('./server.js')
+import { log, color, printVersionAndExit, printHelpAndExit, printStartupInfo } from './log.js'
+import { createServer } from './server.js'
 
 if (process.argv.includes('--version')) {
   printVersionAndExit()

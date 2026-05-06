@@ -1,9 +1,13 @@
-const fsp = require('fs').promises
-const path = require('path')
-const { nameAndVersion } = require('./log.js')
-const pkg = require('../package.json')
+import { promises as fsp } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
+import { nameAndVersion } from './log.js'
 
-module.exports = {
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const pkg = createRequire(import.meta.url)('../package.json')
+
+export {
   serveDirectory,
 }
 

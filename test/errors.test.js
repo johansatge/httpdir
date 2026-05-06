@@ -1,55 +1,48 @@
-const path = require('path')
-
-const httpdir = require('../src/server.js')
+import { describe, test, expect, afterEach } from 'vitest'
+import * as httpdir from '../src/server.js'
 
 describe('Server fires onError()', () => {
   let server
   afterEach(() => server.stop())
-  test('If the base path is invalid', (done) => {
+  test('If the base path is invalid', async () => {
     server = httpdir.createServer({ basePath: {} })
-    server.onStart(() => {
-      throw new Error('Server should not start')
+    const error = await new Promise((resolve) => {
+      server.onError(resolve)
+      server.start()
     })
-    server.onError((error) => {
-      expect(error.message).toContain('Invalid base path')
-      done()
-    })
-    server.start()
+    expect(error.message).toContain('Invalid base path')
   })
 })
 
 describe('Server fires onError()', () => {
   let server
   afterEach(() => server.stop())
-  test('If the port invalid', (done) => {
+  test('If the port invalid', async () => {
     server = httpdir.createServer({ httpPort: -1 })
-    server.onStart(() => {
-      throw new Error('Server should not start')
+    const error = await new Promise((resolve) => {
+      server.onError(resolve)
+      server.start()
     })
-    server.onError((error) => {
-      expect(error.message).toContain('Invalid port number')
-      done()
-    })
-    server.start()
+    expect(error.message).toContain('Invalid port number')
   })
 })
 
 describe('Server fires onError()', () => {
   let server1
   afterEach(() => server1.stop())
-  test('If it cannot start', (done) => {
+  test('If it cannot start', async () => {
     server1 = httpdir.createServer({ httpPort: 8383 })
-    server1.onStart(() => {
+    await new Promise((resolve, reject) => {
+      server1.onStart(resolve)
+      server1.onError(reject)
+      server1.start()
+    })
+    const error = await new Promise((resolve, reject) => {
       const server2 = httpdir.createServer({ httpPort: 8383 })
-      server2.onStart(() => {
-        throw new Error('Server should not start')
-      })
-      server2.onError((error) => {
-        expect(error.message).toContain('already in use')
-        done()
-      })
+      server2.onStart(() => reject(new Error('Server should not start')))
+      server2.onError(resolve)
       server2.start()
     })
-    server1.start()
+    expect(error.message).toContain('already in use')
   })
 })

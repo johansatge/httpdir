@@ -1,6 +1,8 @@
-const pkg = require('../package.json')
+import { createRequire } from 'module'
 
-module.exports = {
+const pkg = createRequire(import.meta.url)('../package.json')
+
+export {
   log,
   color,
   printVersionAndExit,
