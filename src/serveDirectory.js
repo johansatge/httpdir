@@ -1,11 +1,7 @@
 import { promises as fsp } from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
-import { createRequire } from 'module'
+import pkg from '../package.json' with { type: 'json' }
 import { nameAndVersion } from './log.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const pkg = createRequire(import.meta.url)('../package.json')
 
 export {
   serveDirectory,
@@ -16,8 +12,10 @@ export {
  */
 async function serveDirectory({ basePath, requestedPath, response }) {
   const dirPath = path.join(basePath, requestedPath)
-  const dirTemplate = await loadDirTemplate()
-  const filesList = await getFilesList({ dirPath, withBackLink: requestedPath !== '/' })
+  const [dirTemplate, filesList] = await Promise.all([
+    loadDirTemplate(),
+    getFilesList({ dirPath, withBackLink: requestedPath !== '/' }),
+  ])
   response.writeHead(200, {
     'Content-Type': 'text/html',
     'Cache-Control': 'no-cache, no-store',
@@ -55,17 +53,14 @@ function getPathParts({ basePath, requestedPath }) {
  */
 async function getFilesList({ dirPath, withBackLink }) {
   const files = await fsp.readdir(dirPath)
-  const list = []
-  if (withBackLink) {
-    list.push({  href: '../', name: '..', type: 'dir' })
-  }
-  for(let index = 0; index < files.length; index += 1) {
-    const stat = await fsp.stat(path.join(dirPath, files[index]))
+  const fileEntries = await Promise.all(files.map(async (file) => {
+    const stat = await fsp.stat(path.join(dirPath, file))
     const type = stat.isDirectory() ? 'dir' : 'file'
-    const href = files[index] + (stat.isDirectory() ? '/' : '')
-    list.push({ href, name: files[index], type })
-  }
-  return list
+    const href = file + (stat.isDirectory() ? '/' : '')
+    return { href, name: file, type }
+  }))
+  const list = withBackLink ? [{ href: '../', name: '..', type: 'dir' }] : []
+  return list.concat(fileEntries)
 }
 
 /**
@@ -111,16 +106,16 @@ function htmlEntities(str) {
  * - Dynamic data from the current directory is rendered by renderTemplate()
  */
 async function loadDirTemplate() {
-  let html = await fsp.readFile(path.join(__dirname, './ui/dir.html'), 'utf8')
-  const css = await fsp.readFile(path.join(__dirname, './ui/dir.css'), 'utf8')
-  const js = await fsp.readFile(path.join(__dirname, './ui/dir.js'), 'utf8')
-  const bitmapDir = await fsp.readFile(path.join(__dirname, './ui/dir.png'))
-  const base64Dir = Buffer.from(bitmapDir).toString('base64')
-  const bitmapFile = await fsp.readFile(path.join(__dirname, './ui/file.png'))
-  const base64File = Buffer.from(bitmapFile).toString('base64')
-  html = html.replace('{{ css }}', css)
-  html = html.replace('{{ js }}', js)
-  html = html.replace('{{ cssBase64Dir }}', base64Dir)
-  html = html.replace('{{ cssBase64File }}', base64File)
+  const [html, css, js, bitmapDir, bitmapFile] = await Promise.all([
+    fsp.readFile(path.join(import.meta.dirname, './ui/dir.html'), 'utf8'),
+    fsp.readFile(path.join(import.meta.dirname, './ui/dir.css'), 'utf8'),
+    fsp.readFile(path.join(import.meta.dirname, './ui/dir.js'), 'utf8'),
+    fsp.readFile(path.join(import.meta.dirname, './ui/dir.png')),
+    fsp.readFile(path.join(import.meta.dirname, './ui/file.png')),
+  ])
   return html
+    .replace('{{ css }}', css)
+    .replace('{{ js }}', js)
+    .replace('{{ cssBase64Dir }}', Buffer.from(bitmapDir).toString('base64'))
+    .replace('{{ cssBase64File }}', Buffer.from(bitmapFile).toString('base64'))
 }
