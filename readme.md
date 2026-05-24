@@ -99,6 +99,7 @@ This project uses [semver](http://semver.org/).
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| `3.0.1` | 2026-05-24 | Fix `Accept-Ranges` for Firefox Android |
 | `3.0.0` | 2026-05-06 | Migrate to ES modules<br>Drop Node <22 support |
 | `2.1.0` | 2023-01-07 | Support [`Range`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range) request header |
 | `2.0.1` | 2023-02-12 | Fix `onResponse` event for favicons |
