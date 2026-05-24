@@ -37,13 +37,13 @@ async function serveFile({ basePath, requestedPath, fileStat, request, response 
   const responseHeaders = {
     'Content-Type': await getMimeType(requestedPath),
     'Cache-Control': 'no-cache, no-store',
+    'Accept-Ranges': 'bytes',
     'X-Served-By': nameAndVersion(),
   }
   if (requestedRange) {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
     responseHeaders['Content-Length'] = rangeEnd - rangeStart + 1
     responseHeaders['Content-Range'] = `bytes ${rangeStart}-${rangeEnd}/${fileStat.size}`
-    responseHeaders['Accept-Ranges'] = 'bytes'
   } else {
     responseHeaders['Content-Length'] = fileStat.size
   }
