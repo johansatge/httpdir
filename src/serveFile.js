@@ -37,6 +37,8 @@ async function serveFile({ basePath, requestedPath, fileStat, request, response 
   const responseHeaders = {
     'Content-Type': await getMimeType(requestedPath),
     'Cache-Control': 'no-cache, no-store',
+    // Always advertise range support: Firefox Android requires this header on all responses
+    // to enable byte-range requests for media files (not just on range responses)
     'Accept-Ranges': 'bytes',
     'X-Served-By': nameAndVersion(),
   }

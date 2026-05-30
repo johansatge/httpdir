@@ -65,7 +65,7 @@ describe('Server', () => {
     expect(js).toContain('This is a comment to be tested')
     expect(response.headers.get('content-type')).toEqual('application/javascript')
     expect(response.headers.get('content-length')).toEqual(String(fileStat.size))
-    expect(response.headers.get('accept-ranges')).toBeNull()
+    expect(response.headers.get('accept-ranges')).toEqual('bytes')
   })
 })
 
