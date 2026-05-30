@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { promises as fsp } from 'fs'
 import path from 'path'
-import { getMimeType } from './mimeType.js'
+import { getMimeType, isUtf8 } from './mimeType.js'
 import { nameAndVersion } from './log.js'
 
 export {
@@ -34,8 +34,12 @@ async function serveFile({ basePath, requestedPath, fileStat, request, response 
     response.end()
     return { httpCode: 416 }
   }
+  let contentType = getMimeType(requestedPath)
+  if (await isUtf8(path.join(basePath, requestedPath))) {
+    contentType = `${contentType}; charset=utf-8`
+  }
   const responseHeaders = {
-    'Content-Type': await getMimeType(requestedPath),
+    'Content-Type': contentType,
     'Cache-Control': 'no-cache, no-store',
     // Always advertise range support: Firefox Android requires this header on all responses
     // to enable byte-range requests for media files (not just on range responses)
