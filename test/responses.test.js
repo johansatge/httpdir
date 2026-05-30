@@ -63,7 +63,7 @@ describe('Server', () => {
     const fileStat = await fsp.stat(path.join(import.meta.dirname, 'responses.test.js'))
     expect(response.status).toEqual(200)
     expect(js).toContain('This is a comment to be tested')
-    expect(response.headers.get('content-type')).toEqual('application/javascript')
+    expect(response.headers.get('content-type')).toEqual('application/javascript; charset=utf-8')
     expect(response.headers.get('content-length')).toEqual(String(fileStat.size))
     expect(response.headers.get('accept-ranges')).toEqual('bytes')
   })
@@ -84,7 +84,7 @@ describe('Server', () => {
     const fileStat = await fsp.stat(path.join(import.meta.dirname, 'responses.test.js'))
     expect(response.status).toEqual(206)
     expect(js).toContain('This is a comment to be tested')
-    expect(response.headers.get('content-type')).toEqual('application/javascript')
+    expect(response.headers.get('content-type')).toEqual('application/javascript; charset=utf-8')
     expect(response.headers.get('content-length')).toEqual('99')
     expect(response.headers.get('content-range')).toEqual(`bytes 2-100/${fileStat.size}`)
     expect(response.headers.get('accept-ranges')).toEqual('bytes')
@@ -105,5 +105,40 @@ describe('Server', () => {
     const fileStat = await fsp.stat(path.join(import.meta.dirname, 'responses.test.js'))
     expect(response.status).toEqual(416)
     expect(response.headers.get('content-range')).toEqual(`bytes */${fileStat.size}`)
+  })
+})
+
+describe('Server', () => {
+  let server
+  beforeAll(async () => {
+    server = httpdir.createServer({ httpPort: 8989, basePath: 'test' })
+    await start(server)
+  })
+  afterAll(async () => {
+    server.stop()
+  })
+  test('Serves a UTF-8 file with charset=utf-8 in Content-Type', async () => {
+    const response = await fetch('http://localhost:8989/responses.test.js')
+    expect(response.status).toEqual(200)
+    expect(response.headers.get('content-type')).toEqual('application/javascript; charset=utf-8')
+  })
+})
+
+describe('Server', () => {
+  let server
+  const fixturePath = path.join(import.meta.dirname, 'fixture-latin1.txt')
+  beforeAll(async () => {
+    await fsp.writeFile(fixturePath, Buffer.from([0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0xE9, 0xE0, 0xF4]))
+    server = httpdir.createServer({ httpPort: 9090, basePath: 'test' })
+    await start(server)
+  })
+  afterAll(async () => {
+    await fsp.unlink(fixturePath)
+    server.stop()
+  })
+  test('Serves a non-UTF-8 file without charset in Content-Type', async () => {
+    const response = await fetch('http://localhost:9090/fixture-latin1.txt')
+    expect(response.status).toEqual(200)
+    expect(response.headers.get('content-type')).toEqual('text/plain')
   })
 })

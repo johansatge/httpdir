@@ -1,5 +1,8 @@
+import { promises as fsp } from 'fs'
+
 export {
   getMimeType,
+  isUtf8,
 }
 
 const types = {
@@ -88,6 +91,19 @@ const types = {
  * Basic mime types that can be displayed in the browser are returned,
  * otherwise we default to a "download" mime type
  */
+async function isUtf8(filePath) {
+  const buffer = Buffer.alloc(4096)
+  const fh = await fsp.open(filePath, 'r')
+  let isUtf8 = false
+  try {
+    const { bytesRead } = await fh.read(buffer, 0, 4096, 0)
+    new TextDecoder('utf-8', { fatal: true }).decode(buffer.subarray(0, bytesRead))
+    isUtf8 = true
+  } catch {}
+  await fh.close()
+  return isUtf8
+}
+
 function getMimeType(filePath) {
   const extensions = Object.keys(types)
   const fileExtension = extensions.find((ext) => filePath.endsWith(ext))
