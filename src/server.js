@@ -40,12 +40,18 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
     onError: (callback) => { registerCallback('onError', callback) },
   }
 
-  function startServer() {
+  async function startServer() {
     if (!Number.isInteger(httpPort) || httpPort <= 1024) {
       callbacks.onError(new Error('Invalid port number'))
       return
     }
     if (typeof basePath !== 'string' || basePath.length === 0) {
+      callbacks.onError(new Error('Invalid base path'))
+      return
+    }
+    try {
+      basePath = await fsp.realpath(basePath)
+    } catch(error) {
       callbacks.onError(new Error('Invalid base path'))
       return
     }
@@ -89,18 +95,18 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
         callbacks.onResponse({ requestedPath, requestedMethod: 'GET', httpCode })
         return
       }
-      // Block request to directories above the base one
-      const fullRequestedPath = path.resolve(path.join(basePath, requestedPath))
-      if (!fullRequestedPath.startsWith(basePath)) {
-        throw new HttpError('Resource not allowed', 403)
-      }
-      // 404 error
-      let fileStat
+      // Resolve real path (follows symlinks), 404 if not found
+      let realPath
       try {
-        fileStat = await fsp.stat(path.join(basePath, requestedPath))
+        realPath = await fsp.realpath(path.join(basePath, requestedPath))
       } catch(error) {
         throw new HttpError(`Resource ${requestedPath} not found`, 404)
       }
+      // Block access outside the base directory, including via symlinks
+      if (realPath !== basePath && !realPath.startsWith(basePath + path.sep)) {
+        throw new HttpError('Resource not allowed', 403)
+      }
+      const fileStat = await fsp.stat(realPath)
       // Serve a directory listing
       if (fileStat.isDirectory()) {
         const { httpCode } = await serveDirectory({ basePath, requestedPath, response })
@@ -121,7 +127,7 @@ function createServer({ basePath = '.', httpPort = 8080 } = {}) {
       callbacks.onResponse({
         requestedPath,
         requestedMethod: request.method,
-        httpCode: error.httpCode,
+        httpCode: error.httpCode || 500,
       })
     }
   }

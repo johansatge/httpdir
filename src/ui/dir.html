@@ -10,15 +10,15 @@
   <body>
     <h1 class="directory">
       <% for (const index in data.pathParts) { %>
-      <a class="directory__part" href="<%- data.pathParts[index].href %>">
-        <%- data.pathParts[index].name %>
+      <a class="directory__part" href="<%= data.pathParts[index].href %>">
+        <%= data.pathParts[index].name %>
       </a>
       <% } %>
     </h1>
     <ul class="files">
       <% for (const index in data.filesList) { %>
         <li class="files__file files__file--<%= data.filesList[index].type %>">
-          <a href="<%- data.filesList[index].href %>">
+          <a href="<%= data.filesList[index].href %>">
             <%= data.filesList[index].name %>
           </a>
         </li>
@@ -27,7 +27,7 @@
     <div class="footer">
       <button class="footer__link footer__link--theme" data-theme="light">Light</button>
       <button class="footer__link footer__link--theme" data-theme="dark">Dark</button>
-      <a class="footer__link footer__link--right" href="<%- data.footerLink %>">
+      <a class="footer__link footer__link--right" href="<%= data.footerLink %>">
         <%= data.footerText %>
       </a>
     </div>
