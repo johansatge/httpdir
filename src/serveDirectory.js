@@ -7,6 +7,8 @@ export {
   serveDirectory,
 }
 
+let cachedDirTemplate = null
+
 /**
  * Serve a directory (HTML template with a list of files and current directory parts)
  */
@@ -39,9 +41,10 @@ function getPathParts({ basePath, requestedPath }) {
   const rawParts = requestedPath.replace(/(^\/|\/$)/g, '').split('/').filter((part) => part !== '')
   const parts = [{ name: basePath, href: '/' }]
   rawParts.forEach((part, index) => {
+    const encodedPart = encodeURIComponent(part)
     parts.push({
       name: part,
-      href: '../'.repeat(rawParts.length - index) + part + (part !== '' ? '/' : ''),
+      href: '../'.repeat(rawParts.length - index) + encodedPart + (part !== '' ? '/' : ''),
     })
   })
   return parts
@@ -56,7 +59,7 @@ async function getFilesList({ dirPath, withBackLink }) {
   const fileEntries = await Promise.all(files.map(async (file) => {
     const stat = await fsp.stat(path.join(dirPath, file))
     const type = stat.isDirectory() ? 'dir' : 'file'
-    const href = file + (stat.isDirectory() ? '/' : '')
+    const href = encodeURIComponent(file) + (stat.isDirectory() ? '/' : '')
     return { href, name: file, type }
   }))
   const list = withBackLink ? [{ href: '../', name: '..', type: 'dir' }] : []
@@ -95,8 +98,8 @@ function renderTemplate(template, data) {
 }
 
 function htmlEntities(str) {
-  str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  str = str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+  str = str.replace(/&/g, '&amp;')
+  str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
   return str
 }
 
@@ -106,6 +109,7 @@ function htmlEntities(str) {
  * - Dynamic data from the current directory is rendered by renderTemplate()
  */
 async function loadDirTemplate() {
+  if (cachedDirTemplate) return cachedDirTemplate
   const [html, css, js, bitmapDir, bitmapFile] = await Promise.all([
     fsp.readFile(path.join(import.meta.dirname, './ui/dir.html'), 'utf8'),
     fsp.readFile(path.join(import.meta.dirname, './ui/dir.css'), 'utf8'),
@@ -113,9 +117,10 @@ async function loadDirTemplate() {
     fsp.readFile(path.join(import.meta.dirname, './ui/dir.png')),
     fsp.readFile(path.join(import.meta.dirname, './ui/file.png')),
   ])
-  return html
+  cachedDirTemplate = html
     .replace('{{ css }}', css)
     .replace('{{ js }}', js)
     .replace('{{ cssBase64Dir }}', Buffer.from(bitmapDir).toString('base64'))
     .replace('{{ cssBase64File }}', Buffer.from(bitmapFile).toString('base64'))
+  return cachedDirTemplate
 }
