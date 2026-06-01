@@ -2,6 +2,7 @@
 
 import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 import path from 'path'
+import os from 'os'
 import { promises as fsp } from 'fs'
 import * as httpdir from '../src/server.js'
 
@@ -140,5 +141,63 @@ describe('Server', () => {
     const response = await fetch('http://localhost:9090/fixture-latin1.txt')
     expect(response.status).toEqual(200)
     expect(response.headers.get('content-type')).toEqual('text/plain')
+  })
+})
+
+describe('Server', () => {
+  let server
+  let tmpDir
+  beforeAll(async () => {
+    tmpDir = await fsp.mkdtemp(path.join(os.tmpdir(), 'httpdir-test-'))
+    await fsp.writeFile(path.join(tmpDir, '<foo>.txt'), 'hello')
+    await fsp.writeFile(path.join(tmpDir, 'file"name.txt'), 'hello')
+    server = httpdir.createServer({ basePath: tmpDir, httpPort: 9393 })
+    await start(server)
+  })
+  afterAll(async () => {
+    server.stop()
+    await fsp.rm(tmpDir, { recursive: true })
+  })
+  test('Encodes < and > in file names in the directory listing without double-encoding', async () => {
+    const response = await fetch('http://localhost:9393/')
+    const html = await response.text()
+    expect(html).toContain('&lt;foo&gt;.txt')
+    expect(html).not.toContain('&amp;lt;')
+  })
+  test('Serves a file with < and > in its name', async () => {
+    const response = await fetch('http://localhost:9393/%3Cfoo%3E.txt')
+    expect(response.status).toEqual(200)
+    expect(await response.text()).toEqual('hello')
+  })
+  test('Encodes " in file names inside href attributes in the directory listing', async () => {
+    const response = await fetch('http://localhost:9393/')
+    const html = await response.text()
+    expect(html).toContain('href="file%22name.txt"')
+  })
+  test('Serves a file with " in its name', async () => {
+    const response = await fetch('http://localhost:9393/file%22name.txt')
+    expect(response.status).toEqual(200)
+    expect(await response.text()).toEqual('hello')
+  })
+})
+
+describe('Server', () => {
+  let server
+  let tmpDir
+  beforeAll(async () => {
+    tmpDir = await fsp.mkdtemp(path.join(os.tmpdir(), 'httpdir-test-'))
+    await fsp.symlink('/nonexistent/path', path.join(tmpDir, 'broken-link'))
+    server = httpdir.createServer({ basePath: tmpDir, httpPort: 9595 })
+    await start(server)
+  })
+  afterAll(async () => {
+    server.stop()
+    await fsp.rm(tmpDir, { recursive: true })
+  })
+  test('Passes httpCode 500 to onResponse callback for unexpected errors', async () => {
+    const responsePromise = waitForResponse(server)
+    fetch('http://localhost:9595/')
+    const { httpCode } = await responsePromise
+    expect(httpCode).toEqual(500)
   })
 })
