@@ -1,6 +1,6 @@
 {
   "name": "httpdir",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Simple, zero dependency command-line HTTP server for static local files",
   "author": "Johan Satgé",
   "type": "module",
