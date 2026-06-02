@@ -26,7 +26,10 @@ jobs:
           path: node_modules
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
+        # npm ci rejects lock files generated on macOS when optional platform-specific
+        # packages (e.g. @rolldown/binding-wasm32-wasi) have transitive deps not
+        # written to the lock file. npm install respects the lock file without that check.
+        run: npm install
       - name: Run tests
         run: npm test
       - name: Upload coverage reports to Codecov
